@@ -8,6 +8,7 @@ from copy import deepcopy
 from multiprocessing.pool import ThreadPool
 from pathlib import Path
 from typing import Optional
+import pydicom
 
 import cv2
 import numpy as np
@@ -154,7 +155,14 @@ class BaseDataset(Dataset):
                     Path(fn).unlink(missing_ok=True)
                     im = cv2.imread(f)  # BGR
             else:  # read image
-                im = cv2.imread(f)  # BGR
+                extension_image = f.split('.')[-1]
+                if extension_image.lower() == 'dcm':
+                    # TODO
+                    ds = pydicom.dcmread(f, force=True)
+                    im = ds.pixel_array.astype(np.uint8)
+                    im = np.stack([im]*3, -1)
+                else:
+                    im = cv2.imread(f)  # BGR
             if im is None:
                 raise FileNotFoundError(f"Image Not Found {f}")
 

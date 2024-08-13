@@ -15,6 +15,7 @@ from tarfile import is_tarfile
 import cv2
 import numpy as np
 from PIL import Image, ImageOps
+import pydicom
 
 from ultralytics.nn.autobackend import check_class_names
 from ultralytics.utils import (
@@ -119,6 +120,13 @@ def verify_image_label(args):
                     if f.read() != b"\xff\xd9":  # corrupt JPEG
                         ImageOps.exif_transpose(Image.open(im_file)).save(im_file, "JPEG", subsampling=0, quality=100)
                         msg = f"{prefix}WARNING ⚠️ {im_file}: corrupt JPEG restored and saved"
+        else:
+            dcm_image = pydicom.read(im_file, force=True)
+            dcm_image_array = dcm_image.pixel_array
+            dcm_image_array_shape = dcm_image_array.shape
+            shape = (dcm_image_array_shape[1], dcm_image_array_shape[0])
+            print(f"shape else: {shape}")
+
 
         # Verify labels
         if os.path.isfile(lb_file):

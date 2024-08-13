@@ -75,7 +75,8 @@ def verify_image(args):
     # Number (found, corrupt), message
     nf, nc, msg = 0, 0, ""
     try:
-        extension_image = f.split('.')[-1]
+        extension_image = im_file.split('.')[-1]
+        print(f"extension_image: {extension_image}")
         if extension_image.lower() != 'dcm':
             im = Image.open(im_file)
             im.verify()  # PIL verify
@@ -103,7 +104,7 @@ def verify_image_label(args):
     nm, nf, ne, nc, msg, segments, keypoints = 0, 0, 0, 0, "", [], None
     try:
         # Verify images
-        extension_image = f.split('.')[-1]
+        extension_image = im_file.split('.')[-1]
         if extension_image.lower() != 'dcm':
             im = Image.open(im_file)
             im.verify()  # PIL verify

@@ -105,6 +105,7 @@ def verify_image_label(args):
     try:
         # Verify images
         extension_image = im_file.split('.')[-1]
+        print(f"extension_image: {extension_image}")
         if extension_image.lower() != 'dcm':
             im = Image.open(im_file)
             im.verify()  # PIL verify

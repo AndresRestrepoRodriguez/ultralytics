@@ -91,6 +91,12 @@ def verify_image(args):
                     if f.read() != b"\xff\xd9":  # corrupt JPEG
                         ImageOps.exif_transpose(Image.open(im_file)).save(im_file, "JPEG", subsampling=0, quality=100)
                         msg = f"{prefix}WARNING ⚠️ {im_file}: corrupt JPEG restored and saved"
+        else:
+            dcm_image = pydicom.dcmread(im_file, force=True)
+            dcm_image_array = dcm_image.pixel_array
+            dcm_image_array_shape = dcm_image_array.shape
+            shape = (dcm_image_array_shape[1], dcm_image_array_shape[0])
+            print(f"shape else: {shape}")
         nf = 1
     except Exception as e:
         nc = 1
@@ -121,7 +127,7 @@ def verify_image_label(args):
                         ImageOps.exif_transpose(Image.open(im_file)).save(im_file, "JPEG", subsampling=0, quality=100)
                         msg = f"{prefix}WARNING ⚠️ {im_file}: corrupt JPEG restored and saved"
         else:
-            dcm_image = pydicom.read(im_file, force=True)
+            dcm_image = pydicom.dcmread(im_file, force=True)
             dcm_image_array = dcm_image.pixel_array
             dcm_image_array_shape = dcm_image_array.shape
             shape = (dcm_image_array_shape[1], dcm_image_array_shape[0])

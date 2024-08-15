@@ -77,7 +77,7 @@ def verify_image(args):
     nf, nc, msg = 0, 0, ""
     try:
         extension_image = im_file.split('.')[-1]
-        print(f"extension_image: {extension_image}")
+        #print(f"extension_image: {extension_image}")
         if extension_image.lower() != 'dcm':
             im = Image.open(im_file)
             im.verify()  # PIL verify
@@ -96,7 +96,7 @@ def verify_image(args):
             dcm_image_array = dcm_image.pixel_array
             dcm_image_array_shape = dcm_image_array.shape
             shape = (dcm_image_array_shape[1], dcm_image_array_shape[0])
-            print(f"shape else: {shape}")
+            #print(f"shape else: {shape}")
         nf = 1
     except Exception as e:
         nc = 1
@@ -112,7 +112,7 @@ def verify_image_label(args):
     try:
         # Verify images
         extension_image = im_file.split('.')[-1]
-        print(f"extension_image: {extension_image}")
+        #print(f"extension_image: {extension_image}")
         if extension_image.lower() != 'dcm':
             im = Image.open(im_file)
             im.verify()  # PIL verify
@@ -131,7 +131,7 @@ def verify_image_label(args):
             dcm_image_array = dcm_image.pixel_array
             dcm_image_array_shape = dcm_image_array.shape
             shape = (dcm_image_array_shape[1], dcm_image_array_shape[0])
-            print(f"shape else: {shape}")
+            #print(f"shape else: {shape}")
 
 
         # Verify labels

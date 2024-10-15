@@ -159,7 +159,8 @@ class BaseDataset(Dataset):
                 if extension_image.lower() == 'dcm':
                     # TODO
                     ds = pydicom.dcmread(f, force=True)
-                    im = ds.pixel_array.astype(np.float32) / 255.0
+                    #im = ds.pixel_array.astype(np.float32) / 255.0
+                    im = ds.pixel_array.astype(np.uint8)
                     im = np.stack([im]*3, -1)
                 else:
                     im = cv2.imread(f)  # BGR

@@ -15,6 +15,7 @@ from tarfile import is_tarfile
 import cv2
 import numpy as np
 from PIL import Image, ImageOps
+import pydicom
 
 from ultralytics.nn.autobackend import check_class_names
 from ultralytics.utils import (
@@ -36,7 +37,7 @@ from ultralytics.utils.downloads import download, safe_download, unzip_file
 from ultralytics.utils.ops import segments2boxes
 
 HELP_URL = "See https://docs.ultralytics.com/datasets/detect for dataset formatting guidance."
-IMG_FORMATS = {"bmp", "dng", "jpeg", "jpg", "mpo", "png", "tif", "tiff", "webp", "pfm"}  # image suffixes # Change
+IMG_FORMATS = {"bmp", "dng", "jpeg", "jpg", "mpo", "png", "tif", "tiff", "webp", "pfm", "dcm"}  # image suffixes
 VID_FORMATS = {"asf", "avi", "gif", "m4v", "mkv", "mov", "mp4", "mpeg", "mpg", "ts", "wmv", "webm"}  # video suffixes
 PIN_MEMORY = str(os.getenv("PIN_MEMORY", True)).lower() == "true"  # global pin_memory for dataloaders
 FORMATS_HELP_MSG = f"Supported formats are:\nimages: {IMG_FORMATS}\nvideos: {VID_FORMATS}"
@@ -75,7 +76,8 @@ def verify_image(args):
     # Number (found, corrupt), message
     nf, nc, msg = 0, 0, ""
     try:
-        extension_image = f.split('.')[-1]
+        extension_image = im_file.split('.')[-1]
+        #print(f"extension_image: {extension_image}")
         if extension_image.lower() != 'dcm':
             im = Image.open(im_file)
             im.verify()  # PIL verify
@@ -89,6 +91,12 @@ def verify_image(args):
                     if f.read() != b"\xff\xd9":  # corrupt JPEG
                         ImageOps.exif_transpose(Image.open(im_file)).save(im_file, "JPEG", subsampling=0, quality=100)
                         msg = f"{prefix}WARNING ⚠️ {im_file}: corrupt JPEG restored and saved"
+        else:
+            dcm_image = pydicom.dcmread(im_file, force=True)
+            dcm_image_array = dcm_image.pixel_array
+            dcm_image_array_shape = dcm_image_array.shape
+            shape = (dcm_image_array_shape[1], dcm_image_array_shape[0])
+            #print(f"shape else: {shape}")
         nf = 1
     except Exception as e:
         nc = 1
@@ -103,7 +111,8 @@ def verify_image_label(args):
     nm, nf, ne, nc, msg, segments, keypoints = 0, 0, 0, 0, "", [], None
     try:
         # Verify images
-        extension_image = f.split('.')[-1]
+        extension_image = im_file.split('.')[-1]
+        #print(f"extension_image: {extension_image}")
         if extension_image.lower() != 'dcm':
             im = Image.open(im_file)
             im.verify()  # PIL verify
@@ -117,6 +126,13 @@ def verify_image_label(args):
                     if f.read() != b"\xff\xd9":  # corrupt JPEG
                         ImageOps.exif_transpose(Image.open(im_file)).save(im_file, "JPEG", subsampling=0, quality=100)
                         msg = f"{prefix}WARNING ⚠️ {im_file}: corrupt JPEG restored and saved"
+        else:
+            dcm_image = pydicom.dcmread(im_file, force=True)
+            dcm_image_array = dcm_image.pixel_array
+            dcm_image_array_shape = dcm_image_array.shape
+            shape = (dcm_image_array_shape[1], dcm_image_array_shape[0])
+            #print(f"shape else: {shape}")
+
 
         # Verify labels
         if os.path.isfile(lb_file):
